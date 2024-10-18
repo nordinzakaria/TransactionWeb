@@ -1,11 +1,11 @@
-﻿@page "/transactions/add"
+﻿@page "/transactions/edit/{id}"
 
 @using System.Threading.Tasks
 @inject HttpClient Http
 @inject TransactionPackage.Business Buss
 @inject NavigationManager _navigation
 
-<h3>Add Transaction</h3>
+<h3>Edit Transaction</h3>
 
 <EditForm Model="@TheData" OnSubmit="@AddEditData">
     <div style="margin-bottom: 10px;">
@@ -34,18 +34,19 @@
 @code {
     private Transaction TheData = new Transaction();
     private string title = string.Empty;
+    [Parameter]
+    public string Id { set; get; }
+
 
     protected override void OnInitialized()
     {
+        TheData = Buss.TransList.Get(Id);
     }
 
     private async void AddEditData()
     {
         Console.WriteLine("Employee name: " + TheData.Employee.Name);
-        TheData.Id = TheData.Employee.Name +"."+ DateTime.Now.Ticks;
-
         await Http.PostAsJsonAsync("transactions/addedit", TheData);
-        Buss.TransList.Add(TheData);
 
         _navigation.NavigateTo("/transactions");
     }

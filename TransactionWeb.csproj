@@ -19,4 +19,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Pages\TransactionEdit.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
 </Project>

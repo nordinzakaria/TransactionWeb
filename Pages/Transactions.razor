@@ -3,7 +3,6 @@
 @* have to install this *@
 @using Microsoft.AspNetCore.Components.QuickGrid 
 @using System.Threading.Tasks;
-@using TransactionPackage;
 
 @inject HttpClient Http
 @inject NavigationManager _navigation
@@ -74,7 +73,10 @@
     private async Task LoadData()
     {                                                                                // the web api       
         List<Transaction> transactions = await Http.GetFromJsonAsync<List<Transaction>>("transactions");
-        
+
+        // keep a local copy
+        Buss.TransList.transactions = transactions;
+
         datalist = transactions.AsQueryable();
         StateHasChanged();
     }
