@@ -1,0 +1,104 @@
+﻿@* how to reach this page from other pages *@
+@page "/transactions"  
+@* have to install this *@
+@using Microsoft.AspNetCore.Components.QuickGrid 
+@using System.Threading.Tasks;
+@using TransactionPackage;
+
+@inject HttpClient Http
+@inject NavigationManager _navigation
+
+@* your package *@
+@inject TransactionPackage.Business Buss    
+
+
+<h3>Transactions</h3>
+
+    <div>
+        <QuickGrid Items="datalist">
+
+        <PropertyColumn Property="@(p => p.Val)" Sortable="true" />
+        <PropertyColumn Property="@(p => p.Employee.Name)" />
+
+         <TemplateColumn Title="Actions">
+            <button class="btn btn-primary" @onclick="() => EditData(context.Id)">
+                Edit
+            </button>
+            <button class="btn btn-primary" @onclick="() => DelData(context.Id)">
+                Delete
+            </button>
+        </TemplateColumn>
+
+
+        </QuickGrid>
+    </div>
+
+    <div>
+    <button class="btn btn-primary" @onclick="() => AddData()">
+        Add Region
+    </button>
+    </div>
+
+<style>
+    tr {
+        position: relative;
+    }
+
+    .hover-row:hover {
+        background-color: #0000ff33;
+    }
+
+    .selected-row {
+        background-color: #0000ff77;
+    }
+
+    .click-area {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        cursor: pointer;
+    }
+</style>
+
+@code{
+    private IQueryable<Transaction> datalist = null;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {                                                                                // the web api       
+        List<Transaction> transactions = await Http.GetFromJsonAsync<List<Transaction>>("transactions");
+        
+        datalist = transactions.AsQueryable();
+        StateHasChanged();
+    }
+
+    private async void AddData()
+    {
+        _navigation.NavigateTo("/transactions/add/");
+    }
+
+    private async void EditData(string id)
+    {
+        Console.WriteLine("Editing " + id);
+        _navigation.NavigateTo("/transactions/edit/" + id);
+    }
+
+    private async void DelData(string id)
+    {
+        Console.WriteLine("Deleting " + id);
+
+        Foo foo = new Foo(id);
+        await Http.PostAsJsonAsync("transactions/delete/", foo);
+        _navigation.NavigateTo("/transactions", true);
+    }
+
+
+
+}
