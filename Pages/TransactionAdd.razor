@@ -1,0 +1,45 @@
+﻿@page "/transactions/add"
+
+@using System.Threading.Tasks
+@inject HttpClient Http
+@inject TransactionPackage.Business Buss
+@inject NavigationManager _navigation
+
+<h3>Add Transaction</h3>
+
+<EditForm Model="@TheData" OnSubmit="@AddEditData">
+    <div style="margin-bottom: 10px;">
+        <div>Val</div>
+        <InputNumber @bind-Value="TheData.Val" />
+    </div>
+    <div style="margin-bottom: 10px;">
+        <div>Name</div>
+        <InputText @bind-Value="TheData.Employee.Name" />
+    </div>
+    <div style="margin-bottom: 10px;">
+        <div>Name</div>
+        <InputDate @bind-Value="TheData.Date" />
+    </div>
+
+    <button class="btn btn-primary" type="submit"> Add</button>
+    <button class="btn btn-secondary" type="reset">Reset</button>
+</EditForm>
+
+@code {
+    private Transaction TheData = new Transaction();
+    private string title = string.Empty;
+
+    protected override void OnInitialized()
+    {
+    }
+
+    private async void AddEditData()
+    {
+        TheData.Id = TheData.Employee.Name + DateTime.Now.Ticks;
+
+        await Http.PostAsJsonAsync("transactions/addedit", TheData);
+        Buss.TransList.Add(TheData);
+
+        _navigation.NavigateTo("/transactions");
+    }
+}
